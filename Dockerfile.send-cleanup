@@ -1,0 +1,61 @@
+FROM devopsworks/golang-upx:1.21 as builder
+
+ARG version
+ARG builddate
+
+LABEL org.opencontainers.image.base.name="devopsworks/send-cleanup"
+LABEL org.opencontainers.image.description="Cleanup firefox send redis & gcs storages"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.ref.name="${version}-debian"
+LABEL org.opencontainers.image.title="send-cleanup"
+LABEL org.opencontainers.image.vendor="devops-works"
+LABEL org.opencontainers.image.version="${version}"
+
+WORKDIR /go/src/github.com/devops-works/send-tools
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y ca-certificates
+
+# We want to populate the module cache based on the go.{mod,sum} files.
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
+COPY . .
+
+ENV GOPATH=/go/src \
+    GOOS=linux \
+    GOARCH=amd64 \
+    CGO_ENABLED=0 \
+    GO111MODULE=on
+
+RUN go build \
+    -a \
+    -installsuffix cgo \
+    -ldflags "-X main.version=${version} -X main.buildDate=${builddate}" \
+    -o /go/bin/send-cleanup \
+    cmd/send-cleanup/main.go && \
+    strip /go/bin/send-cleanup && \
+    /usr/local/bin/upx -9 /go/bin/send-cleanup
+
+# buster-slim alternative
+
+FROM debian:buster-slim
+
+RUN groupadd -r send-cleanup && useradd --no-log-init -r -g send-cleanup send-cleanup
+
+# hadolint ignore=DL3008
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN update-ca-certificates
+
+COPY --from=builder /go/bin/send-cleanup /usr/local/bin/send-cleanup
+
+USER send-cleanup
+
+ENTRYPOINT ["/usr/local/bin/send-cleanup"]
+
