@@ -18,6 +18,14 @@ TBD
 
 TBD
 
+## TODO
+
+Allow other backend storages and use proper backend according to URL, e.g:
+
+- `gs://` -> GCS
+- `s3://` -> S3
+- `file://` or `^/` -> local file system
+
 ## Contributing
 
 TBD

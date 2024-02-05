@@ -1,3 +1,11 @@
+BUILD_DATE := $(shell date -u '+%Y%m%d.%H%M%S')
+VERSION := $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
+                        cat $(CURDIR)/.version 2> /dev/null || echo v0)
+FLAGS := -X main.buildDate=$(BUILD_DATE) -X main.version=$(VERSION)
+STATIC := -a -ldflags "-extldflags '-static' $(FLAGS)"
+
+IMAGE_NAME = devopsworks/phpsecscan:${VERSION}
+
 # ==================================================================================== #
 # HELPERS
 # ==================================================================================== #
@@ -53,5 +61,9 @@ test/cover:
 ## build: build the application
 .PHONY: build
 build:
-	go build -o=send-cleanup ./cmd/send-cleanup/
-	# go build -o=send-exporter ./cmd/send-exporter/
+	go build -o send-cleanup -ldflags "$(FLAGS)" ./cmd/send-cleanup/
+
+## static: statically build the application
+.PHONY: static
+static:
+	CGO_ENABLED=0 GOOS=linux go build -o send-cleanup $(STATIC) ./cmd/send-cleanup/
