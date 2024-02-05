@@ -3,7 +3,7 @@ name: Release Go project
 on:
   push:
     tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+      - "v*" # triggers only if push new tag version, like `v0.8.4` or else
 
 jobs:
   build:
@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 0 # See: https://goreleaser.com/ci/actions/
 
-      - name: Set up Go 1.20
+      - name: Set up Go 1.21
         uses: actions/setup-go@v2
         with:
-          go-version: "1.20"
+          go-version: "1.21"
         id: go
 
       - name: Run GoReleaser
