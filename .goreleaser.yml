@@ -11,7 +11,7 @@ builds:
       - darwin
       - freebsd
       - openbsd
-    main: ./cmd
+    main: ./cmd/send-cleanup
     ldflags:
       - "-s -w -X main.version={{.Version}} -X main.buildDate={{.CommitDate}}"
     ignore:
