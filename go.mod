@@ -1,10 +1,9 @@
 module github.com/devops-works/send-tools
 
-go 1.21.0
+go 1.22.0
 
 require (
 	cloud.google.com/go/storage v1.37.0
-	github.com/carlmjohnson/versioninfo v0.22.5
 	github.com/redis/go-redis/v9 v9.4.0
 	google.golang.org/api v0.161.0
 )

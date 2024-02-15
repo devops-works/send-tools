@@ -1,10 +1,10 @@
-FROM devopsworks/golang-upx:1.21 as builder
+FROM devopsworks/golang-upx:1.22 as builder
 
 ARG version
 ARG builddate
 
 LABEL org.opencontainers.image.base.name="devopsworks/send-cleanup"
-LABEL org.opencontainers.image.description="Cleanup firefox send redis & gcs storages"
+LABEL org.opencontainers.image.description="Cleanup redis & gcs storages for firefox Send"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.ref.name="${version}-debian"
 LABEL org.opencontainers.image.title="send-cleanup"
